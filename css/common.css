@@ -1,0 +1,133 @@
+html, body {
+	font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
+}
+
+input {
+  outline: none;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, menu, nav, section {
+    display: block;
+}
+
+
+blockquote, q {
+    quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* custom */
+a {
+    color: #7e8c8d;
+    text-decoration: none;
+    -webkit-backface-visibility: hidden;
+}
+
+ul {
+	margin: 0;
+	padding: 0;
+}
+
+li {
+    list-style: none;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+
+::-webkit-scrollbar-track-piece {
+    background-color: rgba(0, 0, 0, 0.2);
+    -webkit-border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+    height: 5px;
+    background-color: rgba(125, 125, 125, 0.7);
+    -webkit-border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+    width: 5px;
+    background-color: rgba(125, 125, 125, 0.7);
+    -webkit-border-radius: 6px;
+}
+
+html, body {
+    width: 100%;
+}
+
+
+/* 深色系列 */
+.dark-s-big {
+	color: #333;
+	font-size: 18px;
+}
+.dark-big {
+	color: #333;
+	font-size: 16px;
+}
+.dark-medium {
+	color: #333;
+	font-size: 14px;
+}
+.dark-samll {
+	color: #333;
+	font-size: 12px;
+}
+.dark-micro {
+	color: #333;
+	font-size: 10px;
+}
+
+/* 灰色系列 */
+.gray-big {
+	color: #a2a2a2;
+	font-size: 16px;
+}
+.gray-medium {
+	color: #a2a2a2;
+	font-size: 14px;
+}
+.gray-samll {
+	color: #a2a2a2;
+	font-size: 12px;
+}
+.gray-micro {
+	color: #a2a2a2;
+	font-size: 10px;
+}
+
+/* 橙色系列 */
+.orange-big {
+	color: #f79709;
+	font-size: 16px;
+}
+.orange-medium {
+	color: #f79709;
+	font-size: 14px;
+}
+.orange-samll {
+	color: #f79709;
+	font-size: 12px;
+}
+.orange-micro {
+	color: #f79709;
+	font-size: 10px;
+}
+
+.margin-right {
+	margin-right: 10px;
+}

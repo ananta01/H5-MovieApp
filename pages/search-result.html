@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<link href="../css/common.css" rel="stylesheet" />
+		<style>
+			.item-img {
+				width: 100px;
+			}
+			.scroll-movie {
+				width: 97%;
+			}
+			
+			.item-img-content {
+				width: 100px;
+				min-height: 120px;
+			}
+			
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">搜索结果</h1>
+		</header>
+		<div class="mui-content">
+			<div class="mui-scroll-wrapper mui-content scroll-movie" id="refreshContainer" style="top: 50px;">
+				<div class="mui-scroll">
+					<ul class="mui-table-view" id="movies">
+						<li class="mui-table-view-cell" v-for="item in movies" :key='item.id' @tap="openDetail(item.id)">
+							<div class="item-img-content mui-pull-left margin-right">
+								<img :src="item.cover" class="item-img">
+							</div>
+							<div class="item-text-content">
+								<h2 class="title mui-ellipsis dark-big">{{item.title}}</h2>
+								<p>
+									<span class="item-movie-type gray-medium">{{item.genres}}</span>&nbsp;
+									<span class="item-movie-score orange-medium">{{parseFloat(item.score) > 0 ? item.score + '分' : '暂无评分'}}</span>
+								</p>
+								<p class="gray-medium">
+									<span>导演</span>&nbsp;
+									<span class="item-movie-dir">{{item.directors}}</span>
+								</p>
+								<p class="gray-medium">
+									<span>主演</span>&nbsp;
+									<span class="item-movie-role">{{item.casts}}</span>
+								</p>
+								<p class="gray-medium">
+									<span>年份</span>&nbsp;
+									<span class="item-movie-role">{{item.year}}</span>
+								</p>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+		</div>
+		<script src="../js/mui.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: true, //启用右滑关闭功能
+				pullRefresh: {
+					container: "#refreshContainer", //下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+					up: {
+						height: 50, //可选.默认50.触发上拉加载拖动距离
+						auto: false, //可选,默认false.自动上拉加载一次
+						contentrefresh: "正在加载...", //可选，正在加载状态时，上拉加载控件上显示的标题内容
+						contentnomore: '没有更多数据了', //可选，请求完毕若没有更多数据时显示的提醒内容；
+						callback: getPrevHotMovieData //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+					}
+				}
+			})
+
+			// Vue实例化
+			var data_movies = new Vue({
+				el: '#movies',
+				data: {
+					movies: []
+				}
+			});
+
+			var name;
+
+			mui.plusReady(function() {
+				// 给detailPage赋值,根据ID获取详情页面
+				detailPage = plus.webview.getWebviewById('movie-detail');
+				if (!detailPage) {
+					detailPage = mui.preload({
+						id: 'movie-detail',
+						url: './movie-detail.html'
+					});
+				}
+				name = plus.webview.currentWebview().name;
+				setTimeout(function (){
+					mui('#refreshContainer').pullRefresh().pullupLoading();
+				},100)
+				
+			})
+
+			// 请求分页数据
+			function getPrevHotMovieData() {
+				mui.getJSON('http://api.douban.com/v2/movie/search?q=' + name, {
+					start: data_movies.movies.length,
+					count: 10
+				}, function(data) {
+					data_movies.movies = data_movies.movies.concat(filterHotInfo(data.subjects));
+					mui('#refreshContainer').pullRefresh().endPullupToRefresh(data_movies.movies.length >= data.total);
+				})
+			}
+
+
+			// 传参id给detail页面
+			function openDetail(id) {
+				
+				mui.fire(detailPage, 'movieId', {
+					id: id
+				});
+
+				// 打开
+				mui.openWindow({
+					id: 'movie-detail',
+					url: './movieDetail.html'
+				})
+			}
+
+
+			// 遍历接口信息
+			function filterHotInfo(items) {
+				var newItems = [];
+
+				items.forEach(function(item) {
+
+					// 类别
+					var genres = item.genres.toString().replace(/,/g, ' / ');
+
+					// 导演
+					var directors = '';
+					for (var i = 0, directorsLen = item.directors.length; i < directorsLen; i++) {
+						directors += item.directors[i].name;
+
+						if (i != directorsLen - 1) {
+							directors += ' / ';
+						}
+					}
+
+					// 演员
+					var casts = '';
+					for (var j = 0, castsLen = item.casts.length; j < castsLen; j++) {
+						casts += item.casts[j].name;
+
+						if (j != castsLen - 1) {
+							casts += ' / ';
+						}
+					}
+
+					newItems.push({
+						id: item.id,
+						title: item.title,
+						casts: casts,
+						directors: directors,
+						score: item.rating.average,
+						cover: item.images.large,
+						genres: genres,
+						year: item.year
+					})
+				})
+
+				return newItems;
+			}
+		</script>
+	</body>
+
+</html>

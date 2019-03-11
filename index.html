@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>首页</title>
+		<script src="js/mui.min.js"></script>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/common.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				background-color: #fff;
+			}
+			
+			.wrap-search {
+				margin: 15px;
+				height: 30px;
+				background: #e6e6e6;
+				border-radius: 5px;
+				text-align: center;
+			}
+			.search-icon {
+				line-height: 30px;
+				color: #aaa;
+				font-size: 16px;
+			}
+			.search-text {
+				line-height: 30px;
+				color: #aaa;
+				font-size: 14px;
+			}
+			.mui-content .mui-pull-top-pocket{
+				top: 60px !important;
+			}
+
+		</style>
+	</head>
+
+	<body>
+		<div class="mui-content" style="background: #fff;">
+			<div class="wrap-search">
+				<span class="mui-icon mui-icon-search search-icon"></span>
+				<span class="search-text">电影/电视剧/影人</span>
+			</div>
+
+		</div>
+
+		<script src="js/util.js"></script>
+		<script type="text/javascript">
+			
+
+			(function() {
+
+
+				mui.init({
+					swipeBack: true, //启用右滑关闭功能
+					subpages: [{
+						url: "./pages/hotMovies.html",  
+						id: "hotMovies", 
+						styles: {
+							top: '60px',
+							bottom: '50px'
+						}
+					}]
+				});
+				mui.plusReady(function() {
+					var self = plus.webview.currentWebview();
+					
+					self.setStyle({'popGesture':'none'});
+
+					// 创建子webview窗口 并初始化
+					var aniShow = {};
+					util.initSubpage(aniShow);
+
+					var nview = plus.nativeObj.View.getViewById('tabBar'),
+						activePage = plus.webview.currentWebview(),
+						targetPage,
+						subpages = util.options.subpages,
+						pageW = window.innerWidth,
+						currIndex = 0;
+
+
+					/**
+					 * 根据判断view控件点击位置判断切换的tab
+					 */
+					nview.addEventListener('click', function(e) {
+						var clientX = e.clientX;
+						if (clientX > 0 && clientX <= parseInt(pageW * 0.33)) {
+							currIndex = 0;
+						} else if (clientX > parseInt(pageW * 0.33) && clientX <= parseInt(pageW * 0.67)) {
+							currIndex = 1;
+						} else if (clientX > parseInt(pageW * 0.67) && clientX <= parseInt(pageW * 1)) {
+							currIndex = 2;
+						} else {
+							currIndex = 3;
+						}
+						// 匹配对应tab窗口	
+						if (currIndex > 0) {
+							targetPage = plus.webview.getWebviewById(subpages[currIndex - 1]);
+						} else {
+							targetPage = plus.webview.currentWebview();
+						}
+
+						if (targetPage == activePage) {
+							return;
+						}
+
+						if (currIndex !== 3) {
+							//底部选项卡切换
+							util.toggleNview(currIndex);
+							// 子页面切换
+							util.changeSubpage(targetPage, activePage, aniShow);
+							//更新当前活跃的页面
+							activePage = targetPage;
+						}
+					});
+				});
+
+				// 给search添加点击事件
+				mui('.wrap-search')[0].addEventListener('tap', function() {
+					mui.openWindow({
+						id: 'search',
+						url: './pages/search.html'
+					})
+				});
+
+			})();
+		</script>
+	</body>
+
+</html>

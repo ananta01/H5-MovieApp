@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/common.css">
+		<style>
+			html,
+			body {
+				width: 100%;
+				height: 100%
+				background-color: #fff;
+			}
+			
+			#slider {
+				position: relative;
+			}
+			
+			.slider-text-wrap {
+				width: 100%;
+				height: 50px;
+				background: rgba(0,0,0,.2);
+				position: absolute;
+				bottom: 5px;
+				left: 0;
+				z-index: 2;
+			}
+			
+			.slider-indicator {
+				z-index: 3;
+			}
+			
+			.mui-slider-item {
+				position: relative;
+
+			}
+			
+			.mui-slider-item .slider-text {
+				position: absolute;
+				bottom: 18px;
+				left: 20px;
+				color: #fff;
+				font-size: 18px;
+			}
+			
+			.ticket-wrap {
+				padding: 20px;
+				border-radius: 0 0 15px 15px;
+				background: #fcfcfc;
+				display: flex;
+				justify-content: space-around;
+			}
+			
+			.ticket-item {
+				width: 40%;
+				height: 150px;
+				line-height: 150px;
+				background: #fff;
+				text-align: center;
+			}
+			
+			.ticket-item-1 {
+				background: linear-gradient(#941ae6, #f1e0fc);
+				background: -webkit-linear-gradient(#941ae6, #f1e0fc);
+			}
+			
+			.ticket-item-2 {
+				background: linear-gradient(#3370cc, #cee1fd);
+				background: -webkit-linear-gradient(#3370cc, #cee1fd);
+			}
+			
+			.ticket-item-text {
+				color: #fff;
+				font-size: 20px;
+				text-shadow: 1px 0 4px #666;
+				font-weight: 700;
+			}
+			
+			.item-img {
+				width: 100px;
+			}
+			
+			.see-movie {
+				padding: 10px 0;
+				margin-left: 15px;
+			}
+			
+			.mui-table-view-cell {
+				position: relative;
+			}
+			.see-text {
+				position: absolute;
+				right: 10px;
+				bottom: 20px;
+				border: 1px solid #f79709;
+				padding: 5px 10px;
+				color: #f79709;
+			}
+			
+			.item-movie-role, .item-movie-dir {
+				display: inline-block;
+				width: 55%;
+			}
+			
+			span {
+				vertical-align: top;
+			}
+			
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">榜单</h1>
+		</header>
+		<div class="mui-content" style="background: none;">
+			<div id="slider" class="mui-slider" >
+				<div class="slider-text-wrap"></div>
+			  <div class="mui-slider-group mui-slider-loop">
+				<!-- 额外增加的一个节点(循环轮播：第一个节点是最后一张轮播) -->
+				<div class="mui-slider-item mui-slider-item-duplicate">
+					<img src="../images/banner03.jpg">
+					<span class="slider-text">生化危机5</span>
+				</div>
+				<!-- 第一张 -->
+				<div class="mui-slider-item">
+				  <img src="../images/banner01.jpg">
+				  <span class="slider-text">海王</span>
+				</div>
+				<!-- 第二张 -->
+				<div class="mui-slider-item">
+				  <img src="../images/banner02.jpg">
+				  <span class="slider-text">速度与激情5</span>
+				</div>
+				<!-- 第三张 -->
+				<div class="mui-slider-item">
+				  <img src="../images/banner03.jpg">
+				  <span class="slider-text">生化危机5</span>
+				</div>
+				<!-- 额外增加的一个节点(循环轮播：最后一个节点是第一张轮播) -->
+				<div class="mui-slider-item mui-slider-item-duplicate">
+				  <img src="../images/banner01.jpg">
+				  <span class="slider-text">海王</span>
+				</div>
+			  </div>
+			  <div class="mui-slider-indicator slider-indicator">
+				<div class="mui-indicator mui-active"></div>
+				<div class="mui-indicator"></div>
+				<div class="mui-indicator"></div>
+			  </div>
+			</div>
+			<div class="ticket-wrap">
+				<div class="ticket-item ticket-item-1">
+					<span class="ticket-item-text">豆瓣Top250</span>
+				</div>
+				<div class="ticket-item ticket-item-2">
+					<span class="ticket-item-text">北美票房榜</span>
+				</div>
+			</div>
+					<div class="see-movie">
+				即将上映
+			</div>
+			<ul class="mui-table-view" id="movies">
+				<li class="mui-table-view-cell" v-for="item in movies" :key='item.id' @tap="open_detail(item.id)">
+					<div class="item-img-content mui-pull-left margin-right">
+						<img :src="item.cover" class="item-img">
+					</div>
+					<div class="item-text-content">
+						<h2 class="title mui-ellipsis dark-big">{{item.title}}</h2>
+						<p>
+							<span class="item-movie-type gray-medium">{{item.genres}}</span>&nbsp;
+							<span class="item-movie-score orange-medium">{{parseFloat(item.score) > 0 ? item.score + '分' : '暂无评分'}}</span>
+						</p>
+						<p class="gray-medium">
+							<span>导演</span>&nbsp;
+							<span class="item-movie-dir mui-ellipsis-2">{{item.directors}}</span>
+						</p>
+						<p class="gray-medium">
+							<span>主演</span>&nbsp;
+							<span class="item-movie-role mui-ellipsis-2">{{item.casts}}</span>
+						</p>
+						<p class="gray-medium">
+							<span>年份</span>&nbsp;
+							<span class="item-movie-role">{{item.year}}</span>
+						</p>
+					</div>
+					<button type="button" class="see-text">想看</button>
+
+				</li>
+			</ul>
+		</div>
+
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script>
+			mui.init();
+			mui('.mui-slider').slider({
+				interval: 3000
+			})
+			
+			var data_movie = new Vue({
+				el: '#movies',
+				data: {
+					movies: []
+				},
+				methods: {
+					open_detail: function(id) {
+						mui.fire(detailPage, 'movieId', {
+							id: id
+						})
+						
+						detailPage.show('slide-in-right');
+					}
+				}
+			});
+			
+			var detailPage;
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				
+				self.setStyle({'popGesture':'hide'});
+				
+				detailPage = plus.webview.getWebviewById('movie-detail');
+				if (!detailPage) {
+					detailPage = mui.preload({
+						url: '../pages/movieDetail.html',
+						id: 'movie-detail',
+					})
+				}
+				
+			})
+			
+			mui.getJSON('http://api.douban.com/v2/movie/coming_soon', {
+				start: 0,
+				count: 10
+			}, function (resp){
+				data_movie.movies = data_movie.movies.concat(filterMoviesInfo(resp.subjects))
+			})
+			
+			// 过滤
+			function filterMoviesInfo(items) {
+				var newItems = [];
+				
+				items.forEach(function(item) {
+					var genres = item.genres.toString().replace(/,/g, ' / ');
+					var casts = '';
+					
+					for (var i = 0, len = item.casts.length; i < len; i++) {
+						
+						casts += item.casts[i].name;
+						
+						if (i != len - 1) {
+							casts += ' / '
+						}
+						
+					}
+					
+					newItems.push({
+						id: item.id,
+						genres: genres,
+						directors: item.directors[0].name,
+						casts: casts,
+						title: item.title,
+						year: item.year,
+						score: item.rating.average,
+						cover: item.images.large
+					})
+					
+				})
+				
+				return newItems;
+				
+			}	
+			
+			mui('.ticket-item-1')[0].addEventListener('tap', function() {
+				mui.openWindow({
+					url: '../pages/hotTop.html',
+					id: 'hotTop'
+				})
+			})		
+			
+			mui('.ticket-item-2')[0].addEventListener('tap', function() {
+				mui.openWindow({
+					url: '../pages/NorthHotTop.html',
+					id: 'NorthHotTop'
+				})
+			})	
+					
+		</script>
+	</body>
+
+</html>

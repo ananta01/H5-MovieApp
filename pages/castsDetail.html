@@ -1,0 +1,199 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<link href="../css/common.css" rel="stylesheet" />
+		<style>
+			html, body {
+				background: #fff;
+			}
+			.movie-img-wrap {
+				padding-top: 10px;
+				padding-bottom: 10px;
+				text-align: center;
+				background: #1DC8DC;
+			}
+			.mui-content {
+				background: #fff;
+			}
+			.movie-img {
+				width: 160px;
+				height: 240px;
+				vertical-align: top;
+			}
+			
+			.movie-detail-content, .movie-content-wrap, .movie-casts {
+				padding-top: 12px;
+				margin: 0 15px;
+			}
+			
+			.movie-detail-content {
+				padding-bottom: 10px;
+			}
+			
+			.movie-content-wrap {
+				height: 55px;
+				background: #fcfcfc;
+			}
+			.movie-content-left {
+				float: left;
+			}
+			.movie-score {
+				float: right;
+				min-width: 60px;
+				padding: 2px 5px 5px 5px;
+				box-sizing: border-box;
+				height: 65px;
+				background: #fff;
+				box-shadow: 0 0 10px #aaa;
+				text-align: center;
+			}
+			
+			p {
+				margin: 0;
+			}
+			
+			.mui-ellipsis-4 {
+			    display: -webkit-box;
+			    overflow: hidden;
+			
+			    white-space: normal !important;
+			    text-overflow: ellipsis;
+			    word-wrap: break-word;
+			
+			    -webkit-line-clamp: 4;
+			    -webkit-box-orient: vertical;
+			}
+			
+			.mui-content {
+				border-radius: 0 0 15px 15px;
+				box-shadow: 0 0 10px #aaa;
+				background: #fcfcfc;
+			}
+			
+			.mui-scroll, .mui-scroll-wrapper {
+				height: 300px !important;
+			}
+			
+			.casts-list {
+				display: inline-block;
+				margin-top: 5px;
+				margin-right: 10px;
+				width: 100px;
+				height: 140px;
+				text-align: center;
+			}
+			
+			.movie-casts {
+				margin-top: 20px;
+			}
+			
+			.casts-img {
+				width: 100px;
+				height: 120px;
+			}
+			
+						
+			#detail-wrap {
+				margin-top: 44px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">演员</h1>
+		</header>
+		<div id="detail-wrap">
+			<div class="mui-content">
+				<div class="movie-img-wrap">
+					<img :src="cover" class="movie-img">
+				</div>
+				<div class="movie-content-wrap">
+					<div class="movie-content-left">
+						<h2 class="dark-big">{{name}}</h2>
+						<p class="gray-medium">{{enName}}</p>
+					</div>
+				</div>
+				<div class="movie-detail-content">
+					<p>个人简介</p>
+					<p class="dark-big mui-ellipsis-4">{{summary}}</p>
+				</div>
+			</div>
+			<div class="movie-casts">
+				<p>优秀作品</p>
+				<div class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="height: 170px !important;">
+					<div class="mui-scroll">
+						<ul>
+							<li class="casts-list" v-for="item in works">
+								<img :src="item.subject.images.medium" class="casts-img">
+								<p class="dark-samll mui-ellipsis">{{item.subject.title}}</p>
+								<p class="orange-medium mui-ellipsis">{{item.subject.rating.average}}分</p>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../js/mui.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script type="text/javascript">
+			mui.init()
+
+			function getDefaultData() {
+				return {
+					name: '',
+					enName: '',
+					cover: '',
+					summary: '',
+					works: []
+				}
+			}
+
+			//Vue对象
+			var data_detail = new Vue({
+				el: '#detail-wrap',
+				data: getDefaultData(),
+				methods: {
+					resetData: function() { //重置数据
+						Object.assign(this.$data, getDefaultData());
+					}
+				}
+			});
+			var self = null;
+			mui.plusReady(function() {
+				self = plus.webview.currentWebview();
+				var castId = self.castId;
+
+				//添加hide事件
+				self.addEventListener('hide', function(e) {
+					window.scrollTo(0, 0); //滚到顶部
+					data_detail.resetData(); //数据重置
+					console.log('1111')
+				}, false);
+
+				plus.nativeUI.showWaiting('加载中', {
+					width: '100px',
+					height: '100px'
+				})
+
+				mui.getJSON('http://api.douban.com/v2/movie/celebrity/' + castId, function(resp) {
+					data_detail.name = resp.name;
+					data_detail.enName = resp.name_en;
+					data_detail.cover = resp.avatars.large;
+					data_detail.summary = resp.name + '，' + resp.gender + '，' + resp.born_place;
+					data_detail.works = resp.works;
+					plus.nativeUI.closeWaiting();
+				})
+			})
+		
+			
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<style>
+			.mui-content {
+				background: #fff;
+			}
+			
+			.search-inp {
+				width: 80%;
+				display: inline-block;
+				padding-left: 15px;
+				margin-top: 15px;
+				text-align: center;
+			}
+			
+			.record-wrap {
+				font-size: 12px;
+				color: #888888;
+				background: #E6E6E6;
+				padding-left: 15px;
+				padding-right: 15px;
+				padding-top: 5px;
+				padding-bottom: 5px;
+			}
+			
+			.cancel {
+				width: 20%;
+				text-align: center;
+				float: right;
+				line-height: 30px;
+				color: #2A7CF8;
+				font-size: 16px;
+				margin-top: 15px;
+			}
+			
+		</style>
+	</head>
+
+	<body>
+		<div class="mui-content">
+			<div class="search-inp">
+				<div class="mui-input-row mui-search">
+					<input id="search" type="search" class="mui-input-clear" placeholder="电影/电视剧/影人" />
+				</div>
+			</div>
+			<span id="cancel" class="cancel">取消</span>
+			<div class="record-wrap">
+				<span>搜索记录</span>
+				<span id="clear" style="color: #2A7CF8;float: right;">清除</span>
+			</div>
+			<ul id="list" class="mui-table-view">
+				<li class="mui-table-view-cell" v-for="item in records" @tap="open_result(item)">
+					{{item}}
+				</li>
+			</ul>
+		</div>
+		<script src="../js/mui.js"></script>
+		<script src="../js/vue.min.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			
+			mui('#cancel')[0].addEventListener('tap', function (){
+				mui.back()
+			})
+			
+			var search_data = new Vue({
+				el: '#list',
+				data:  {
+					records: []
+				},
+				methods: {
+					open_result: function (item){
+						mui.openWindow({
+							id: 'search-result',
+							url: './search-result.html',
+							extras: {
+								name: item
+							}
+						});
+						search_data.records.remove(item);
+						search_data.records.splice(0, 0, item);	
+					}
+				}
+			})
+			
+			//新增属性
+			Array.prototype.contains = function(obj){
+				var i = this.length;
+				while(i--){
+					if(this[i] === obj){
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			Array.prototype.indexOf = function(val){
+				for(var i=0;i<this.length;i++){
+					if(this[i] == val){
+						return i;
+					}
+				}
+				return -1;
+			}
+			
+			Array.prototype.remove = function(val){
+				var index = this.indexOf(val);
+				if(index > -1){
+					this.splice(index,1);
+				}
+			}
+			
+			// 清除事件
+			mui('#clear')[0].addEventListener('tap', function() {
+				plus.storage.setItem('searchData', '');
+				search_data.records = [];
+			})
+			
+			// 判断缓存
+			mui.plusReady(function () {
+			    if (plus.storage.getItem('searchData') !== '') {
+					search_data.records = plus.storage.getItem('searchData').split(',');
+				}
+			})
+			
+			// 记录键盘事件
+			document.onkeydown = function(event){
+				var e = event || window.event;
+				var searchVal = document.getElementById('search').value;
+				if(e && e.keyCode == 13){
+					//回车事件
+					if(search_data.records.contains(searchVal)){
+						search_data.records.remove(searchVal);
+					}
+					search_data.records.splice(0,0,searchVal);
+					plus.storage.setItem('searchData',search_data.records.toString());
+					
+					// 回车发起请求
+					search_data.open_result(searchVal);
+				}
+			}
+			
+		</script>
+	</body>
+
+</html>
